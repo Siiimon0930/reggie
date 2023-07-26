@@ -15,6 +15,8 @@ import com.cf.reggie.service.SetmealService;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -40,6 +42,7 @@ public class SetmealController {
      * @return com.cf.reggie.common.R<java.lang.String>
      */
     @PostMapping
+    @CacheEvict(value = "setmealCache", allEntries = true) // 添加套餐时删除全部套餐缓存
     public R<String> save(@RequestBody SetmealDto setmealDto){
         setmealService.saveWithSetmealDish(setmealDto);
         return R.success("添加套餐成功");
@@ -92,6 +95,7 @@ public class SetmealController {
      * @return com.cf.reggie.common.R<java.lang.String>
      */
     @DeleteMapping()
+    @CacheEvict(value = "setmealCache", allEntries = true)
     public R<String> delete(@RequestParam("ids") List<Long> ids){
         setmealService.deleteWithFlavor(ids);
         return R.success("删除菜品成功");
@@ -104,6 +108,7 @@ public class SetmealController {
      * @return com.cf.reggie.common.R<java.lang.String>
      */
     @PostMapping("/status/{status}")
+    @CacheEvict(value = "setmealCache", allEntries = true)
     public R<String> updateStatus(@PathVariable int status, @RequestParam("ids") List<Long> ids){
         // 设置一个dish对象接收status
         Setmeal setmeal = new Setmeal();
@@ -140,12 +145,14 @@ public class SetmealController {
      * @return com.cf.reggie.common.R<java.lang.String>
      */
     @PutMapping
+    @CacheEvict(value = "setmealCache", allEntries = true)
     public R<String> update(@RequestBody SetmealDto setmealDto){
         setmealService.updateWithSetmealDish(setmealDto);
         return R.success("修改套餐成功");
     }
 
     @GetMapping("/list")
+    @Cacheable(value = "setmealCache", key = "#setmeal.categoryId")
     public R<List<Setmeal>> list (Setmeal setmeal){
         LambdaQueryWrapper<Setmeal> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(Setmeal::getCategoryId, setmeal.getCategoryId());
