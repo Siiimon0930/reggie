@@ -37,14 +37,17 @@ public class LoginCheckFilter implements Filter {
 
         // 定义放行的URI
         String[] urls = new String[]{
-                // 前两个是controller，后两个是静态资源
                 "/employee/login",
                 "/employee/logout",
                 "/backend/**",
                 "/front/**",
                 "/common/**",
                 "/user/sendMsg",
-                "/user/login"
+                "/user/login",
+                "/doc.html",
+                "/webjars/**",
+                "/swagger-resources",
+                "/v2/api-docs"
         };
 
         // 2.判断是否是放行资源
